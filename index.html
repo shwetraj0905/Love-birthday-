@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday Stuti! 🎉❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ... [All your existing CSS remains unchanged except for the #ageCounter section, which you can remove] ... */
+
+    /* Remove #ageCounter styles */
+    /* Add carousel styles */
+    #loveCarousel {
+      margin: 24px 0 20px;
+      min-height: 60px;
+      font-size: 1.25rem;
+      color: #d94f70;
+      font-weight: 600;
+      background: #fff0f6;
+      border-radius: 18px;
+      box-shadow: 0 0 15px rgba(217,79,112,0.13);
+      padding: 18px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: background 0.3s;
+      user-select: text;
+      min-width: 220px;
+      max-width: 90vw;
+      margin-left: auto;
+      margin-right: auto;
+      letter-spacing: 0.02em;
+      position: relative;
+      z-index: 2;
+    }
+    .carousel-emoji {
+      font-size: 2rem;
+      margin-right: 10px;
+      animation: emojiPop 0.6s cubic-bezier(.6,1.6,.6,1) both;
+    }
+    @keyframes emojiPop {
+      0% { transform: scale(0.4) rotate(-30deg); opacity: 0; }
+      50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0); }
+    }
+    /* Add popups for ILY */
+    #ilyPopupOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10001;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    #ilyPopupOverlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #ilyPopup {
+      background: linear-gradient(135deg, #fff0f6, #ffd6e8);
+      border-radius: 25px;
+      padding: 45px 40px 45px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 0 40px rgba(217,79,112,0.8);
+      text-align: center;
+      font-family: 'Dancing Script', cursive;
+      color: #d94f70;
+      font-size: 2.4rem;
+      position: relative;
+      animation: popupShow 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+      overflow: visible;
+    }
+    #ilyPopup .ily-heart {
+      font-size: 3.2rem;
+      margin-bottom: 12px;
+      display: block;
+      animation: heartBeat 1.2s infinite;
+    }
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1);}
+      20% { transform: scale(1.2);}
+      40% { transform: scale(0.95);}
+      60% { transform: scale(1.1);}
+      80% { transform: scale(1);}
+    }
+    #ilyPopupCloseBtn {
+      position: absolute;
+      top: 12px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      font-size: 2.1rem;
+      color: #d94f70;
+      cursor: pointer;
+      font-weight: 700;
+      line-height: 1;
+      padding: 0;
+      transition: color 0.3s;
+    }
+    #ilyPopupCloseBtn:hover {
+      color: #ff4d6d;
+    }
+    /* Responsive tweaks */
+    @media (max-width: 600px) {
+      #loveCarousel { font-size: 1.05rem; padding: 14px 12px; }
+      #ilyPopup { font-size: 1.4rem; padding: 28px 10px 32px; }
+      #ilyPopup .ily-heart { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="container" role="main" aria-label="Birthday greeting for Stuti">
+
+    <h1>
+      Happy Birthday My Love Stuti! 🎉🎂❤️
+      <div class="heart-bounce heart1"></div>
+      <div class="heart-bounce heart2"></div>
+      <div class="heart-bounce heart3"></div>
+      <div class="heart-bounce heart4"></div>
+    </h1>
+
+    <!-- Unique carousel section -->
+    <div id="loveCarousel" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="typingMessage" aria-live="polite" aria-atomic="true" style="display:none"></div>
+
+    <button id="showWishesBtn" aria-haspopup="true" aria-controls="wishes" aria-expanded="false" style="display:none">Show Your Birthday Wishes 💌</button>
+
+    <div id="wishes" tabindex="0" aria-live="polite" role="region" aria-label="Birthday wishes message"></div>
+
+    <div class="signature">Always your Shwet ❤️</div>
+  </div>
+
+  <!-- Cake animation -->
+  <div id="cakeAnimation" aria-hidden="true">
+    <div class="cake">
+      <div class="candle"></div>
+      <div class="flame"></div>
+    </div>
+  </div>
+
+  <!-- Happy Birthday Popup -->
+  <div id="birthdayPopupOverlay" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+    <div id="birthdayPopup">
+      <button id="popupCloseBtn" aria-label="Close popup">&times;</button>
+      <div id="popupTitleWrapper">
+        <div id="popupCake" aria-hidden="true">🎂</div>
+        <h2 id="popupTitle">🎉 Happy Birthday Stuti! 🎂❤️</h2>
+      </div>
+      <canvas id="popupConfettiCanvas" aria-hidden="true"></canvas>
+    </div>
+  </div>
+
+  <!-- I Love You Popup -->
+  <div id="ilyPopupOverlay" role="dialog" aria-modal="true" aria-labelledby="ilyPopupTitle">
+    <div id="ilyPopup">
+      <button id="ilyPopupCloseBtn" aria-label="Close popup">&times;</button>
+      <span class="ily-heart">❤️</span>
+      <div id="ilyPopupTitle">I Love You Meri Jaan! 💖</div>
+      <div style="font-size:1.1rem;margin-top:18px; color:#b03a56;">
+        You are my everything, my forever, my heart’s truest joy. <br>
+        <span style="font-size:1.4rem;">💑✨</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating hearts animation -->
+  <!-- ... [Keep your existing floating hearts, confetti, and cake scripts unchanged] ... -->
+
+  <!-- Carousel Script -->
+  <script>
+    const carouselItems = [
+      {emoji: "🌟", text: "You light up my world every single day."},
+      {emoji: "😂", text: "Your laughter is my favorite sound."},
+      {emoji: "💖", text: "Your love makes me the happiest person alive."},
+      {emoji: "👸", text: "You are my queen, my princess, my everything."},
+      {emoji: "🍰", text: "With you, every day is as sweet as cake."},
+      {emoji: "🎶", text: "Your voice is the melody to my heart."},
+      {emoji: "🦄", text: "You make life magical and full of wonder."},
+      {emoji: "🫂", text: "Your hugs are my safe place."},
+      {emoji: "✨", text: "You bring sparkle to every moment."},
+      {emoji: "💋", text: "Your kisses are my favorite thing in the universe."},
+      {emoji: "🥰", text: "You are adorable beyond words."},
+      {emoji: "🌈", text: "With you, life is always colorful."},
+      {emoji: "🌹", text: "You are as beautiful as a rose."},
+      {emoji: "💌", text: "You are my greatest love letter."},
+      {emoji: "🧸", text: "Cuddling with you is the best feeling ever."}
+    ];
+    let carouselIndex = 0;
+    const carouselEl = document.getElementById('loveCarousel');
+    function showCarouselItem() {
+      const item = carouselItems[carouselIndex];
+      carouselEl.innerHTML = `<span class="carousel-emoji">${item.emoji}</span> ${item.text}`;
+      carouselIndex = (carouselIndex + 1) % carouselItems.length;
+    }
+    showCarouselItem();
+    setInterval(showCarouselItem, 2200);
+  </script>
+
+  <!-- Typing animation with expanded message (hidden at first) -->
+  <script>
+    // Only shows after ILY popup closes
+    const messageLines = [
+      "To my dearest Stuti, my shining star 🌟, my sweetest honeybun 🍯,",
+      "",
+      "From the moment you came into this world, you’ve been a radiant light that brightens every corner of my life. Your laughter is my favorite melody 🎶, your smile my daily sunshine ☀️, and your love the greatest gift I could ever ask for. 💖",
+      "",
+      "My darling princess 👸, today we celebrate not just your birthday but the incredible person you are - kind, beautiful, smart, and endlessly loving. Every day with you is a new adventure filled with joy, warmth, and magic. ✨",
+      "",
+      "May this special day overflow with happiness, sweet surprises 🎁, and all the cake 🎂 and sparkles ✨ your heart desires. May your dreams soar higher than balloons 🎈 and your heart be wrapped in endless love and laughter. 😂❤️",
+      "",
+      "You deserve the world and more, my lovebug 🐞. Thank you for being my forever partner, my best friend, and my greatest blessing. I promise to stand by you through every moment, cheering you on and loving you endlessly. 💕",
+      "",
+      "You are my sunshine on rainy days, my rainbow after every storm, my confidant, my muse, my soulmate. 🌈☀️",
+      "",
+      "Happy Birthday, my love! Let’s make this year the most magical yet! 🎉🥳🎊",
+      "",
+      "Forever and always yours,",
+      "Your Shwet ❤️"
+    ];
+
+    function startTypingMessage() {
+      const typingEl = document.getElementById('typingMessage');
+      typingEl.style.display = 'block';
+      let lineIndex = 0, charIndex = 0;
+      typingEl.textContent = "";
+      function typeWriter() {
+        if(lineIndex < messageLines.length) {
+          if(charIndex < messageLines[lineIndex].length) {
+            typingEl.textContent += messageLines[lineIndex].charAt(charIndex);
+            charIndex++;
+            setTimeout(typeWriter, 30);
+          } else {
+            typingEl.textContent += '\n';
+            lineIndex++;
+            charIndex = 0;
+            setTimeout(typeWriter, 350);
+          }
+        } else {
+          // Show wishes button after typing
+          document.getElementById('showWishesBtn').style.display = 'inline-block';
+        }
+      }
+      typeWriter();
+    }
+  </script>
+
+  <!-- Wishes button script (unchanged) -->
+  <script>
+    const wishesBtn = document.getElementById('showWishesBtn');
+    const wishesDiv = document.getElementById('wishes');
+    wishesBtn.addEventListener('click', () => {
+      wishesBtn.style.display = 'none';
+      wishesDiv.style.display = 'block';
+      wishesDiv.focus();
+      wishesDiv.textContent = `
+My Sweet Stuti 💖,
+
+May your birthday be filled with sunshine, smiles, laughter, and love. 🌞😊😂❤️
+You deserve the world and more - endless happiness, sweet moments, and all the magic life can offer. ✨🎁🎉
+
+Thank you for being my everything, my lovebug 🐞 and my heart’s delight. I love you beyond words and forevermore. 💕💫
+
+Forever yours,
+Shwet ❤️
+      `;
+    });
+  </script>
+
+  <!-- Happy Birthday Popup Script (modified to trigger ILY popup) -->
+  <script>
+    const popupOverlay = document.getElementById('birthdayPopupOverlay');
+    const popupCloseBtn = document.getElementById('popupCloseBtn');
+    const popupConfettiCanvas = document.getElementById('popupConfettiCanvas');
+    const popupCtx = popupConfettiCanvas.getContext('2d');
+
+    function resizePopupCanvas() {
+      popupConfettiCanvas.width = popupOverlay.clientWidth;
+      popupConfettiCanvas.height = popupOverlay.clientHeight;
+    }
+    window.addEventListener('resize', resizePopupCanvas);
+    resizePopupCanvas();
+
+    class PopupConfettiParticle {
+      constructor() {
+        this.x = Math.random() * popupConfettiCanvas.width;
+        this.y = Math.random() * popupConfettiCanvas.height - popupConfettiCanvas.height;
+        this.size = 6 + Math.random() * 4;
+        this.color = `hsl(${Math.random() * 360}, 70%, 70%)`;
+        this.speedY = 1 + Math.random() * 2;
+        this.speedX = (Math.random() - 0.5) * 1.5;
+        this.tilt = Math.random() * 10;
+        this.tiltSpeed = 0.1 + Math.random() * 0.1;
+        this.tiltAngle = 0;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.tiltAngle += this.tiltSpeed;
+        this.tilt = Math.sin(this.tiltAngle) * 10;
+
+        if (this.y > popupConfettiCanvas.height) {
+          this.y = -10;
+          this.x = Math.random() * popupConfettiCanvas.width;
+        }
+        if (this.x > popupConfettiCanvas.width) this.x = 0;
+        if (this.x < 0) this.x = popupConfettiCanvas.width;
+      }
+      draw() {
+        popupCtx.beginPath();
+        popupCtx.lineWidth = this.size / 2;
+        popupCtx.strokeStyle = this.color;
+        popupCtx.moveTo(this.x + this.tilt + this.size / 4, this.y);
+        popupCtx.lineTo(this.x + this.tilt, this.y + this.tilt + this.size / 4);
+        popupCtx.stroke();
+      }
+    }
+
+    let popupConfettiParticles = [];
+    function initPopupConfetti() {
+      popupConfettiParticles = [];
+      for (let i = 0; i < 80; i++) {
+        popupConfettiParticles.push(new PopupConfettiParticle());
+      }
+    }
+
+    function drawPopupConfetti() {
+      popupCtx.clearRect(0, 0, popupConfettiCanvas.width, popupConfettiCanvas.height);
+      popupConfettiParticles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      if (popupOverlay.classList.contains('active')) {
+        requestAnimationFrame(drawPopupConfetti);
+      }
+    }
+
+    initPopupConfetti();
+
+    // Show popup on page load with confetti animation start
+    window.addEventListener('load', () => {
+      popupOverlay.classList.add('active');
+      drawPopupConfetti();
+    });
+
+    // Close popup function (now triggers ILY popup)
+    function closePopup() {
+      popupOverlay.classList.remove('active');
+      popupCtx.clearRect(0, 0, popupConfettiCanvas.width, popupConfettiCanvas.height);
+      // Show ILY popup after a short delay
+      setTimeout(() => {
+        document.getElementById('ilyPopupOverlay').classList.add('active');
+      }, 400);
+    }
+
+    popupCloseBtn.addEventListener('click', closePopup);
+    popupOverlay.addEventListener('click', (e) => {
+      if(e.target === popupOverlay) closePopup();
+    });
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && popupOverlay.classList.contains('active')) closePopup();
+    });
+  </script>
+
+  <!-- ILY Popup Script (shows typing after close) -->
+  <script>
+    const ilyPopupOverlay = document.getElementById('ilyPopupOverlay');
+    const ilyPopupCloseBtn = document.getElementById('ilyPopupCloseBtn');
+    ilyPopupCloseBtn.addEventListener('click', closeIlyPopup);
+    ilyPopupOverlay.addEventListener('click', (e) => {
+      if(e.target === ilyPopupOverlay) closeIlyPopup();
+    });
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && ilyPopupOverlay.classList.contains('active')) closeIlyPopup();
+    });
+    function closeIlyPopup() {
+      ilyPopupOverlay.classList.remove('active');
+      // Start typing message after ILY popup closes
+      setTimeout(startTypingMessage, 300);
+    }
+  </script>
+
+  <!-- [Keep your floating hearts, confetti, and cake scripts as before] -->
+
+</body>
+</html>
